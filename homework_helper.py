@@ -270,7 +270,7 @@ class MainView(tk.Frame):
         p1.show()
 
 root = tk.Tk()
-root.wm_geometry("400x400")
+root.wm_geometry("500x500")
 root.title("Homework Helper")
 main = MainView(root)
 main.pack(side="top", fill="both", expand=True)
