@@ -1,3 +1,6 @@
 build/
 dist/
 Homework\ Helper.spec
+homework.db
+homework.db.wal
+to_app.txt

@@ -5,8 +5,7 @@ import os
 
 def load_homework():
     base_dir = os.path.dirname(__file__) 
-    folder_path = os.path.join(base_dir, './homework')
-    filename = folder_path + "/homework.db"
+    filename = base_dir + "/homework.db"
     homework = duckdb.connect(filename)
     homework.sql("CREATE TABLE IF NOT EXISTS homework(Id int primary key, Entry varchar(255), Difficulty varchar(255), Amount varchar(255), Completed varchar(255))")
     homework.sql("CREATE SEQUENCE IF NOT EXISTS seq_id START 1")
@@ -15,8 +14,7 @@ def load_homework():
 def create_homework():
     if tkinter.messagebox.askokcancel("创建并覆盖", "创建新的作业集将覆盖原来的作业集, 你真的要这么做吗？"):
         base_dir = os.path.dirname(__file__) 
-        folder_path = os.path.join(base_dir, './homework')
-        filename = folder_path + "/homework.db"
+        filename = base_dir + "/homework.db"
         homework = duckdb.connect(filename)
         homework.sql("DROP TABLE IF EXISTS homework")
         homework.sql("DROP SEQUENCE IF EXISTS seq_id")
@@ -34,8 +32,20 @@ class Page(tk.Frame):
 class Page1(Page):
    def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
-        label = tk.Label(self, text="Homework Helper")
-        label.pack(side="top", fill="both", expand=True)
+        self.label = tk.Label(self, text="Homework Helper", font=("Arial", 40))
+        self.label.pack(side="top", fill="both", expand=True)
+        self.label.place(x=80, y=100)
+        self.information_label = tk.Label(self, text=
+        '''
+Version: v1.0
+Last update date: 2023/8/6 (y/m/d)
+Contributor: fanfansmilkyway
+E-mail: fanfansmilkyway@qq.com / fanfansmilkyway@gmail.com
+Source code: https://github.com/fanfansmilkyway/Homework-Helper"
+''')
+        self.information_label.pack(side="left", fill="x", expand=True)
+        self.information_label.place(x=0, y=350)
+        
         
 # Create New Homework
 class Page2(Page):
@@ -261,11 +271,13 @@ class MainView(tk.Frame):
         b2 = tk.Button(buttonframe, text="创建作业集", command=lambda:[p2.show(), create_homework()])
         b3 = tk.Button(buttonframe, text="更新作业集", command=lambda:[p3.show(), p3.update_options()])
         b4 = tk.Button(buttonframe, text="统计作业集", command=lambda:[p4.show(), p4.update_data()])
+        b5 = tk.Button(buttonframe, text="退出", command=root.destroy)
 
         b1.pack(side="left")
         b2.pack(side="left")
         b3.pack(side="left")
         b4.pack(side="left")
+        b5.pack(side="left")
 
         p1.show()
 
