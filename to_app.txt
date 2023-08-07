@@ -1,0 +1,5 @@
+Mac OS:
+python3 -m PyInstaller --noconfirm --name "Homework Helper" \
+--icon "homework.ico" \
+--windowed  \
+homework_helper.py

@@ -8,8 +8,8 @@ First of all, create the homework set. For one homework entry you need to input:
 Why to input Difficulty?
 When statistic the homework set, program will do weighted calculation. The difficulty of a homework bigger and its importance is higher. It makes statistics more accurate.
 
-Version: v1.0
-Last update date: 2023/8/6 (y/m/d)
+Version: v1.1
+Last update date: 2023/8/7 (y/m/d)
 Contributor: fanfansmilkyway
 E-mail: fanfansmilkyway@qq.com / fanfansmilkyway@gmail.com
 Source code: https://github.com/fanfansmilkyway/Homework-Helper

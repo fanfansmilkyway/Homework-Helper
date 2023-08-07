@@ -1,6 +1,8 @@
 import tkinter as tk
 import tkinter.messagebox
+import tkinter.filedialog
 import duckdb
+import shutil
 import os
 
 def load_homework():
@@ -22,6 +24,31 @@ def create_homework():
         homework.sql("CREATE SEQUENCE IF NOT EXISTS seq_id START 1")
         p2.homework = homework
 
+def import_homework():
+    if tkinter.messagebox.askokcancel("导入", "导入作业集将覆盖原来的作业集, 你真的要这么做吗？"):
+        filename = tkinter.filedialog.askopenfilename()
+        #print(filename)
+        base_dir = os.path.dirname(__file__) 
+        dst_filename = base_dir + "/homework.db"
+        os.remove(dst_filename)
+        shutil.copy(filename, dst_filename)
+        homework = load_homework()
+        homework.sql("SELECT * FROM homework").show()
+        tkinter.messagebox.showinfo(message="已成功导入作业集，现在请重启程序")
+    else:
+        return
+
+def export_homework():
+    dst_directory = tkinter.filedialog.askdirectory()
+    dst_filename = dst_directory + "/homework.db"
+    if not os.path.exists(dst_filename):
+        base_dir = os.path.dirname(__file__)
+        filename = base_dir + "/homework.db"
+        shutil.copy(filename, dst_filename)
+        tkinter.messagebox.showinfo(message="已成功导出作业集，已导出至路径: {0}".format(os.path.abspath(dst_filename)))
+    else:
+        tkinter.messagebox.showwarning(title="警告", message='文件 {0} 已存在'.format(dst_filename))
+
 class Page(tk.Frame):
     def __init__(self, *args, **kwargs):
         tk.Frame.__init__(self, *args, **kwargs)
@@ -37,8 +64,8 @@ class Page1(Page):
         self.label.place(x=80, y=100)
         self.information_label = tk.Label(self, text=
         '''
-Version: v1.0
-Last update date: 2023/8/6 (y/m/d)
+Version: v1.1
+Last update date: 2023/8/7 (y/m/d)
 Contributor: fanfansmilkyway
 E-mail: fanfansmilkyway@qq.com / fanfansmilkyway@gmail.com
 Source code: https://github.com/fanfansmilkyway/Homework-Helper"
@@ -103,8 +130,9 @@ class Page2(Page):
             return
 
         self.homework.sql("INSERT INTO homework (Id, Entry, Difficulty, Amount, Completed) VALUES (nextval('seq_id'), '{0}', {1}, {2}, 0)".format(self.entry, self.difficulty, self.amount))
-        print("Homework Enrty Added: {0}: Diffifulty:{1}, Amount:{2}".format(self.entry, self.difficulty, self.amount))
-        print(self.homework.sql("SELECT * FROM homework").show())
+        #print("Homework Enrty Added: {0}: Diffifulty:{1}, Amount:{2}".format(self.entry, self.difficulty, self.amount))
+        #print(self.homework.sql("SELECT * FROM homework").show())
+        self.homework.sql("CHECKPOINT")
         self.clear_entry()
 
     # Clear values in the field
@@ -118,7 +146,7 @@ class Page3(Page):
     def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
         self.homework = load_homework()
-        print(self.homework.sql("SELECT * FROM homework").show())
+        #print(self.homework.sql("SELECT * FROM homework").show())
         self.ENTRY = list(self.homework.sql("SELECT Entry FROM homework").fetchall())
         self.ENTRY = [i[0] for i in self.ENTRY]
         self.AMOUNT = list(self.homework.sql("SELECT Amount FROM homework").fetchall())
@@ -166,7 +194,8 @@ class Page3(Page):
                 self.homework.sql("UPDATE homework SET Completed='{0}' WHERE Entry='{1}'".format(self.completed+self.previous_completed, self.ENTRY[self.OPTIONS.index(self.entry)]))
             else:
                 tkinter.messagebox.showwarning(title="警告", message="你的总完成量已经超过了总量！作业：{0}, 总完成量：{1}+{2}, 总量：{3}.".format(self.ENTRY[self.OPTIONS.index(self.entry)], self.previous_completed, self.completed, self.amount))
-            print(self.homework.sql("SELECT * FROM homework").show())
+            #print(self.homework.sql("SELECT * FROM homework").show())
+            self.homework.sql("CHECKPOINT")
             self.clear_entry()
             self.update_options()
         except Exception as error:
@@ -227,8 +256,10 @@ class Page4(Page):
             self.completed_percentage = round(self.completed / int(i) * 100, 1)
             self.current_entry = self.ENTRY[self.AMOUNT.index(i)]
             self.mylist.insert('end', "{0} 完成度: {1} %({2}/{3})(难度:{4})".format(self.current_entry, self.completed_percentage, self.completed, i, self.difficulty))
-
-        self.TOTAL_COMPLETED = round(self.total_completed / self.total_difficulty_times_amount * 100, 1)
+        try:
+            self.TOTAL_COMPLETED = round(self.total_completed / self.total_difficulty_times_amount * 100, 1)
+        except ZeroDivisionError:
+            tkinter.messagebox.showwarning(title="警告", message="此作业集为空，暂不可以进行统计！")
         self.mylist.insert('end', "\n")
         self.mylist.insert('end', "作业总共完成度: {0}%".format(self.TOTAL_COMPLETED))
         self.mylist.pack(side = 'bottom', fill = 'both' )
@@ -271,13 +302,15 @@ class MainView(tk.Frame):
         b2 = tk.Button(buttonframe, text="创建作业集", command=lambda:[p2.show(), create_homework()])
         b3 = tk.Button(buttonframe, text="更新作业集", command=lambda:[p3.show(), p3.update_options()])
         b4 = tk.Button(buttonframe, text="统计作业集", command=lambda:[p4.show(), p4.update_data()])
-        b5 = tk.Button(buttonframe, text="退出", command=root.destroy)
+        b5 = tk.Button(buttonframe, text="导入", command=import_homework)
+        b6 = tk.Button(buttonframe, text="导出", command=export_homework)
 
         b1.pack(side="left")
         b2.pack(side="left")
         b3.pack(side="left")
         b4.pack(side="left")
         b5.pack(side="left")
+        b6.pack(side="left")
 
         p1.show()
 
