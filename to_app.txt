@@ -3,3 +3,16 @@ python3 -m PyInstaller --noconfirm --name "Homework Helper" \
 --icon "homework.ico" \
 --windowed  \
 homework_helper.py
+
+To dmg:
+create-dmg \                                                 
+  --volname "Homework Helper" \
+  --volicon "homework.ico" \
+  --window-pos 200 120 \
+  --window-size 600 300 \
+  --icon-size 100 \
+  --icon "Homework Helper.app" 175 120 \
+  --hide-extension "Homework Helper.app" \
+  --app-drop-link 425 120 \
+  "dist/Homework Helper.dmg" \
+  "dist/dmg/"

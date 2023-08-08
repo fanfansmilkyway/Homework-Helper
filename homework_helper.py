@@ -248,14 +248,14 @@ class Page4(Page):
         self.mylist.delete(0, 'end')
         self.total_difficulty_times_amount = 0
         self.total_completed = 0
-        for i in self.AMOUNT:
-            self.difficulty = int(self.DIFFICULTY[self.AMOUNT.index(i)])
-            self.total_difficulty_times_amount += self.difficulty * int(i)
-            self.completed = int(self.COMPLETED[self.AMOUNT.index(i)])
+        for i in self.ENTRY:
+            self.amount = int(self.AMOUNT[self.ENTRY.index(i)])
+            self.difficulty = int(self.DIFFICULTY[self.ENTRY.index(i)])
+            self.total_difficulty_times_amount += self.difficulty * self.amount
+            self.completed = int(self.COMPLETED[self.ENTRY.index(i)])
             self.total_completed += self.completed * self.difficulty
-            self.completed_percentage = round(self.completed / int(i) * 100, 1)
-            self.current_entry = self.ENTRY[self.AMOUNT.index(i)]
-            self.mylist.insert('end', "{0} 完成度: {1} %({2}/{3})(难度:{4})".format(self.current_entry, self.completed_percentage, self.completed, i, self.difficulty))
+            self.completed_percentage = round(self.completed / self.amount * 100, 1)
+            self.mylist.insert('end', "{0} 完成度: {1} %({2}/{3})(难度:{4})".format(i, self.completed_percentage, self.completed, self.amount, self.difficulty))
         try:
             self.TOTAL_COMPLETED = round(self.total_completed / self.total_difficulty_times_amount * 100, 1)
         except ZeroDivisionError:
